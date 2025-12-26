@@ -1,153 +1,115 @@
 import {useState} from 'react';
-import {Box, Collapse, List, ListItemButton, ListItemIcon, ListItemText, Typography,} from '@mui/material';
 import {
-    BarChart as BarChartIcon,
-    Dashboard as DashboardIcon,
+    Box,
+    Collapse,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    ListItemText,
+    Typography,
+} from '@mui/material';
+import {
     ExpandLess,
     ExpandMore,
-    InsertDriveFile as InsertDriveFileIcon,
-    People as PeopleIcon,
-    Settings as SettingsIcon,
-    ShoppingCart as ShoppingCartIcon,
+    Folder as FolderIcon,
+    Description as DescriptionIcon
 } from '@mui/icons-material';
+import {menuData, type MenuItem} from "./menu.tsx";
+
+
 
 const PlatformSideBar = () => {
-    const [openMenus, setOpenMenus] = useState({
-        dashboard: true,
-        management: false,
-    });
+    // 使用嵌套状态管理
+    const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
 
-    const handleMenuToggle = (menu: string) => {
-        setOpenMenus(prev => ({
+    const handleToggle = (itemId: string) => {
+        setExpandedItems(prev => ({
             ...prev,
-            [menu]: !prev[menu]
+            [itemId]: !prev[itemId]
         }));
     };
 
+    // 递归渲染菜单
+    const renderMenuItems = (items: MenuItem[], depth: number = 0) => {
+        return items.map((item) => {
+            const isExpanded = expandedItems[item.id] || false;
+            const paddingLeft = 2 + depth * 2; // 每级增加 2rem 缩进
+
+            if (item.type === 'folder' && item.children) {
+                return (
+                    <div key={item.id}>
+                        <ListItemButton
+                            onClick={() => handleToggle(item.id)}
+                            sx={{
+                                pl: paddingLeft,
+                                borderRadius: 1,
+                                mb: 0.5,
+                                '&:hover': {
+                                    backgroundColor: 'action.hover',
+                                },
+                            }}
+                        >
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                                {item.icon || <FolderIcon />}
+                            </ListItemIcon>
+                            <ListItemText
+                                primary={item.text}
+                                primaryTypographyProps={{
+                                    fontSize: depth === 0 ? '0.95rem' : '0.875rem'
+                                }}
+                            />
+                            {isExpanded ? <ExpandLess fontSize={depth > 0 ? "small" : "medium"} /> : <ExpandMore fontSize={depth > 0 ? "small" : "medium"} />}
+                        </ListItemButton>
+
+                        <Collapse in={isExpanded} timeout="auto" unmountOnExit>
+                            <List component="div" disablePadding>
+                                {renderMenuItems(item.children, depth + 1)}
+                            </List>
+                        </Collapse>
+                    </div>
+                );
+            }
+
+            return (
+                <ListItemButton
+                    key={item.id}
+                    sx={{
+                        pl: paddingLeft,
+                        borderRadius: 1,
+                        mb: 0.5,
+                        '&:hover': {
+                            backgroundColor: 'action.hover',
+                        },
+                    }}
+                >
+                    <ListItemIcon sx={{
+                        minWidth: 36,
+                        ...(depth === 2 && { minWidth: 32 })
+                    }}>
+                        {item.icon || <DescriptionIcon fontSize={depth === 2 ? "small" : "medium"} />}
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={item.text}
+                        primaryTypographyProps={{
+                            fontSize: depth === 2 ? '0.875rem' : '0.9rem',
+                            fontWeight: depth === 0 ? 500 : 400
+                        }}
+                    />
+                </ListItemButton>
+            );
+        });
+    };
+
+
+
     return (
         <Box sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-            {/* 菜单内容 */}
             <Box sx={{flex: 1, overflow: 'auto', p: 2}}>
                 <List component="nav" sx={{p: 0}}>
-                    {/* 仪表盘菜单 */}
-                    <ListItemButton
-                        onClick={() => handleMenuToggle('dashboard')}
-                        sx={{
-                            borderRadius: 1,
-                            mb: 1,
-                            '&:hover': {
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
-                    >
-                        <ListItemIcon>
-                            <DashboardIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="仪表盘"/>
-                        {openMenus.dashboard ? <ExpandLess/> : <ExpandMore/>}
-                    </ListItemButton>
-
-                    <Collapse in={openMenus.dashboard} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{pl: 4, borderRadius: 1, mb: 0.5}}>
-                                <ListItemIcon sx={{minWidth: 36}}>
-                                    <InsertDriveFileIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="概览"/>
-                            </ListItemButton>
-                            <ListItemButton sx={{pl: 4, borderRadius: 1, mb: 0.5}}>
-                                <ListItemIcon sx={{minWidth: 36}}>
-                                    <InsertDriveFileIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="统计"/>
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-
-                    {/* 用户管理 */}
-                    <ListItemButton
-                        onClick={() => handleMenuToggle('management')}
-                        sx={{
-                            borderRadius: 1,
-                            my: 1,
-                            '&:hover': {
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
-                    >
-                        <ListItemIcon>
-                            <PeopleIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="用户管理"/>
-                        {openMenus.management ? <ExpandLess/> : <ExpandMore/>}
-                    </ListItemButton>
-
-                    <Collapse in={openMenus.management} timeout="auto" unmountOnExit>
-                        <List component="div" disablePadding>
-                            <ListItemButton sx={{pl: 4, borderRadius: 1, mb: 0.5}}>
-                                <ListItemIcon sx={{minWidth: 36}}>
-                                    <InsertDriveFileIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="用户列表"/>
-                            </ListItemButton>
-                            <ListItemButton sx={{pl: 4, borderRadius: 1, mb: 0.5}}>
-                                <ListItemIcon sx={{minWidth: 36}}>
-                                    <InsertDriveFileIcon/>
-                                </ListItemIcon>
-                                <ListItemText primary="角色管理"/>
-                            </ListItemButton>
-                        </List>
-                    </Collapse>
-
-                    {/* 单一级菜单项 */}
-                    <ListItemButton
-                        sx={{
-                            borderRadius: 1,
-                            my: 1,
-                            '&:hover': {
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
-                    >
-                        <ListItemIcon>
-                            <ShoppingCartIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="订单管理"/>
-                    </ListItemButton>
-
-                    <ListItemButton
-                        sx={{
-                            borderRadius: 1,
-                            my: 1,
-                            '&:hover': {
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
-                    >
-                        <ListItemIcon>
-                            <BarChartIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="数据报表"/>
-                    </ListItemButton>
-
-                    <ListItemButton
-                        sx={{
-                            borderRadius: 1,
-                            my: 1,
-                            '&:hover': {
-                                backgroundColor: 'action.hover',
-                            },
-                        }}
-                    >
-                        <ListItemIcon>
-                            <SettingsIcon/>
-                        </ListItemIcon>
-                        <ListItemText primary="系统设置"/>
-                    </ListItemButton>
+                    {renderMenuItems(menuData)}
                 </List>
             </Box>
 
-            {/* 底部信息 */}
             <Box sx={{
                 p: 2,
                 borderTop: '1px solid #e0e0e0',

@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import { PlatformHeader } from "../components/layout/PlatformHeader.tsx";
 import PlatformSideBar from "../components/layout/PlatformSideBar.tsx";
 import Box from "@mui/material/Box";
@@ -36,7 +37,7 @@ export const Home = () => {
                             overflow: 'auto',
                         }}
                     >
-                        <h1>主内容区域</h1>
+                        <Outlet/>
                     </Box>
                 </Box>
             </Box>

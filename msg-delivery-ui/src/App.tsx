@@ -1,10 +1,8 @@
-function App() {
+import {RouterProvider} from "react-router-dom"
+import {router} from "./serviceRouter.tsx";
 
+export function App() {
     return (
-        <>
-            <h2>hello world</h2>
-        </>
+        <RouterProvider router={router}></RouterProvider>
     )
 }
-
-export default App

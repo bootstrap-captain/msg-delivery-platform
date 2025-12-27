@@ -16,7 +16,9 @@ export interface MenuItem {
     text: string;
     icon?: React.ReactNode;
     type: 'link' | 'folder';
+    path?: string;// 路由路径
     children?: MenuItem[];
+    onClick?: () => void;
 }
 
 // 菜单数据
@@ -26,23 +28,26 @@ export const menuData: MenuItem[] = [
         text: 'Pod Status',
         icon: <DashboardIcon/>,
         type: 'folder',
+        path: "pod-status",
         children: [
             {
                 id: 'delivery',
                 text: 'Delivery',
                 icon: <SendIcon/>,
                 type: 'folder',
+                path: 'pod-status/delivery',
                 children: [
-                    {id: 'mPush', text: 'mPush', type: 'link'},
-                    {id: 'email', text: 'Email', type: 'link'},
-                    {id: 'sms', text: 'SMS', type: 'link'},
+                    {id: 'mPush', text: 'mPush', type: 'link', path: 'pod-status/delivery/mPush'},
+                    {id: 'email', text: 'Email', type: 'link', path: 'pod-status/delivery/email'},
+                    {id: 'sms', text: 'SMS', type: 'link', path: 'pod-status/delivery/sms'},
                 ]
             },
             {
                 id: 'routing',
                 text: 'Routing',
                 icon: <AltRouteIcon/>,
-                type: 'folder'
+                type: 'folder',
+                path: 'pod-status/routing',
             },
             {id: 'ingress', text: 'Ingress', icon: <InsertDriveFileIcon/>, type: 'link'}
         ]

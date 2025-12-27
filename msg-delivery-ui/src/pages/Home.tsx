@@ -9,8 +9,6 @@ export const Home = () => {
             <PlatformHeader />
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                 {/* Header - 顶部 */}
-
-
                 <Box sx={{
                     display: 'flex',
                     flex: 1,
